@@ -1,0 +1,128 @@
+<% include include/main-header %>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">	
+ <div class="wrapper">
+<% include include/header %>
+  
+  <!-- Left side column. contains the logo and sidebar -->
+  <% include include/sidebar %>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        UK 2011 <span class="locNameChart1Data">England and Wales</span>
+        <small>Key stats</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="/index"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Bubble Chart</li>
+      </ol>
+    </section>
+
+      <section class="content">
+<label>Select Area : </label>
+<select id="areaChart1Data" onChange="loadChart1Data()" class="form-control">
+	<option value="K04000001" selected>England and Wales</option>
+	<option value="E92000001">England</option>
+	<option value="E12000001">North East</option>
+	<option value="E06000047">County Durham UA</option>
+	<option value="E12000002">NORTH WEST </option>
+	<option value="E12000003">YORKSHIRE AND THE HUMBER</option>
+	<option value="E12000004">EAST MIDLANDS</option>
+	<option value="E12000005">WEST MIDLANDS</option>
+	<option value="E12000007">LONDON</option>
+	<option value="E12000008">SOUTH EAST</option>
+	<option value="E12000009">SOUTH WEST</option>
+	<option value="W92000004">WALES</option>
+</select>
+<label>Display As : </label>
+<select id="displayChart1Data" onChange="loadChart1Data()" class="form-control">
+	<option value="Count" selected>Total Count</option>
+	<option value="Percentage">Percentage</option>
+</select>
+
+<h2>Age Structure (Bubble Chart)</h2>
+<h5>X - axis - Age (in years)</h5>
+<h5>Y - axis - No. of persons (in millions)</h5>
+<p>This table provides information about the age structure, bubble chart of different age groups of <span class="locNameChart1Data">England and Wales</span> as at census day, 27 March 2011.
+</p>
+
+<div id="Chart1Data" style="width: 1400px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+</section>
+</div>
+ <% include include/footer %>
+<script>
+$(document).ready(function() {
+	loadChart1Data();
+});
+function sortNumber(a,b) {
+    return a - b;
+}
+function loadChart1Data(){
+	var locNameStr=$("#area :selected").text();
+	$(".locNameChart1Data").html(locNameStr);
+	var area=$("#areaChart1Data").val();
+	var displayAs=$("#displayChart1Data").val();
+	var jsonRow="/search-results?area="+area+"&searchby="+displayAs;
+	$.getJSON(jsonRow,function(response){
+		if(response.error){
+			//
+		}else{
+			var columnsValArr=[], columnNameArr=[];
+			$.each(response.columnDetails, function(i ,row){
+				if(row["ColumnVariableCode"]!="KS102EW0001"){
+					columnsValArr.push(row["ColumnVariableCode"]);
+					columnNameArr.push(row["ColumnVariableDescription"]);
+				}
+			});
+			
+			var data=[], yArr=[], valueArr=[],sizeArr=[];
+			$.each(response.aaData, function(index ,value){
+				if(columnsValArr.indexOf(index) != -1){  
+   					yArr.push(value);
+   					valueArr.push(value);
+				}
+			});
+			
+			var newArr={};
+			valueArr= valueArr.sort(sortNumber);
+			$.each(valueArr, function(index ,value){
+				newArr[value]=index;
+			});	
+		
+			$.each(yArr, function(i ,row){
+				var sizeNum=parseInt(newArr[row])*5;
+				sizeArr.push(sizeNum);
+			});	
+			
+			var trace = {
+  				x: [0, 4, 7, 9, 14, 15, 17, 19, 24, 29, 44, 59, 64, 74, 84, 89, 100],
+  				y: yArr,
+  				text: columnNameArr,
+  				marker: {
+    				color: ['rgba(222,45,38,0.8)', 'rgba(204,204,204,1)', , 'rgba(0,0,255,0.3)', 'rgba(255,255,0,0.3)', 'rgba(192,192,192,0.3)', 'rgba(255,0,255,0.3)', 'rgba(0,128,0,0.6)', 'rgba(0,255,255,0.2)', 'rgba(128,128,0,0.3)' , 'rgba(0,0,255,0.6)', 'rgba(128,0,128,0.9)','rgba(0,0,128,0.1)', 'rgba(0,0,128,0.4)',  'rgba(0,255,0,0.9)','rgba(255,0,0,0.8)'],
+   			 		size: sizeArr
+   			 	},
+   			 	
+  				mode: 'markers'
+			};
+			
+  			data.push(trace);
+  			var layout = {
+  				xaxis: {title: 'Age'},
+  				yaxis: {title: displayAs},
+  				hovermode: 'closest',
+  				showlegend: false,
+			};
+
+			Plotly.newPlot('Chart1Data', data, layout);
+		}
+	});
+}
+</script>
+</body>
+</html>

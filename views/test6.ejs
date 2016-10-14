@@ -1,0 +1,104 @@
+<% include include/main-header %>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">	
+ <div class="wrapper">
+<% include include/header %>
+  
+  <!-- Left side column. contains the logo and sidebar -->
+  <% include include/sidebar %>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+       UK 2011 <span class="locName">England and Wales</span> - Key stats
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="/index"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Age Structure</li>
+      </ol>
+    </section>
+      <section class="content">
+<label>Select Area : </label>
+<select id="areaChart6Data" onChange="loadChart6Data()" class="form-control">
+	<option value="K04000001" selected>England and Wales</option>
+	<option value="E92000001">England</option>
+	<option value="E12000001">North East</option>
+	<option value="E06000047">County Durham UA</option>
+	<option value="E12000002">NORTH WEST </option>
+	<option value="E12000003">YORKSHIRE AND THE HUMBER</option>
+	<option value="E12000004">EAST MIDLANDS</option>
+	<option value="E12000005">WEST MIDLANDS</option>
+	<option value="E12000007">LONDON</option>
+	<option value="E12000008">SOUTH EAST</option>
+	<option value="E12000009">SOUTH WEST</option>
+	<option value="W92000004">WALES</option>
+</select>
+<label>Display As : </label>
+<select id="displayChart6Data" onChange="loadChart6Data()" class="form-control">
+	<option value="Count" selected>Total Count</option>
+	<option value="Percentage">Percentage</option>
+</select>
+
+<h4>Age Structure (Pie Chart)</h3>
+<h5>X - axis - Age (in years)</h5>
+<h5>Y - axis - No. of persons </h5>
+<p>This table provides information about the age structure, pie chart of different age groups of <span class="locName">England and Wales</span> as at census day, 27 March 2011.
+</p>
+
+<div id="Chart6Data" style="width: 1400px; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+</section>
+</div>
+ <% include include/footer %>
+<script>
+$(document).ready(function() {
+	loadChart6Data();
+});
+
+function loadChart6Data(){
+	var locNameStr=$("#area :selected").text();
+	$(".locName").html(locNameStr);
+	var area=$("#areaChart6Data").val();
+	var displayAs=$("#displayChart6Data").val();
+	var jsonRow="/search-results?area="+area+"&searchby="+displayAs;
+	$.getJSON(jsonRow,function(response){
+		if(response.error){
+			//
+		}else{
+			var columnsValArr=[], columnsNameArr=[];
+			$.each(response.columnDetails, function(i ,row){
+				if(row["ColumnVariableCode"]!="KS102EW0001"){
+					columnsNameArr.push(row["ColumnVariableDescription"]);
+					columnsValArr.push(row["ColumnVariableCode"]);
+				}
+			});
+			
+			var data=[], yArr=[];
+			$.each(response.aaData, function(index ,value){
+				if(columnsValArr.indexOf(index) != -1){  
+   					yArr.push(value);
+				}
+			});
+			var trace= {
+    			labels: columnsNameArr,
+    			values: yArr,
+    			type: 'pie'
+  			}
+			
+  			data.push(trace);
+  			
+  			var layout = {
+ 				height: 500,
+  				width: 700
+			};
+ 			
+			Plotly.newPlot('Chart6Data', data, layout);
+		}
+	});
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<%
+var locNameStr="", geoCode="";
+if (typeof queryStr.area !== 'undefined' && queryStr.area !== null && queryStr.area !="") {
+locNameStr=queryStr.area;
+}
+if (typeof queryStr.code !== 'undefined' && queryStr.code !== null && queryStr.code !="") {
+geoCode=queryStr.code;
+}
+%>
+<% include include/main-header %>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">	
+ <div class="wrapper">
+<% include include/header %>
+  
+  <!-- Left side column. contains the logo and sidebar -->
+  <% include include/sidebar %>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        UK 2011 <span class="locName"></span>
+        <small>Key stats</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="/index"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Pie Chart</li>
+      </ol>
+    </section>
+
+      <section class="content">
+<label>Select Area : </label>
+<select id="areaChart2Data" onChange="generate_chart()" class="form-control">
+	<option value="K04000001" selected>England and Wales</option>
+	<option value="E92000001">England</option>
+	<option value="E12000001">North East</option>
+	<option value="E06000047">County Durham UA</option>
+	<option value="E12000002">NORTH WEST </option>
+	<option value="E12000003">YORKSHIRE AND THE HUMBER</option>
+	<option value="E12000004">EAST MIDLANDS</option>
+	<option value="E12000005">WEST MIDLANDS</option>
+	<option value="E12000007">LONDON</option>
+	<option value="E12000008">SOUTH EAST</option>
+	<option value="E12000009">SOUTH WEST</option>
+	<option value="W92000004">WALES</option>
+</select>
+
+<h4>Age Structure (Pie Chart)</h3>
+<p>This table provides information about the age structure, pie chart of different age groups of <span class="locName"></span> as at census day, 27 March 2011.
+</p>
+
+<div id="myDiv" style="height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+</section>
+</div>
+ <% include include/footer %>
+<script>
+var matchArr2=["KS101EW0002", "KS101EW0003"];
+var contentArr="";
+function generate_chart(){
+	var locNameStr=$("#areaChart2Data :selected").text();
+	$(".locName").html(locNameStr);
+	var data2=[];
+	var codeStr=$("#areaChart2Data").val();
+	$.each(contentArr, function(i, row){
+		if(row['GeographyCode']==codeStr){
+			var yArr2=[];
+			$.each(row, function(index, value){
+				if(matchArr2.indexOf(index) != -1){  
+   					yArr2.push(value);
+				}
+			});
+			
+  			var trace2= {
+    			labels: ["Male", "Female"],
+    			values: yArr2,
+    			type: 'pie'
+  			}
+  			data2.push(trace2);
+		}
+	});
+	
+ 	var layout2 = {
+ 		height: 500,
+  		width: 700
+	};
+	Plotly.newPlot('myDiv', data2, layout2);
+}
+
+
+Plotly.d3.csv('data/KS101EWDATA.CSV', function(err, rows){
+	contentArr=rows;
+	generate_chart();
+});
+</script>
+</body>
+</html>
