@@ -2070,24 +2070,39 @@ border-left:none;
 	background-color: #00acd6
 }
 .btn-danger {
+
 	background-color: #fbb83b;
-	border-bottom: 3px solid #d69d33;
-border-right: 3px solid #d69d33;
+
+	border-bottom: 3px solid #8c0025;
+
+border-right: 3px solid #8c0025;
+
 border-left:none;
+
 border-top:none;
-	
-}
-.btn-danger:hover, .btn-danger:active, .btn-danger.hover {
-	background-color: #fbb83b;border-bottom: 3px solid #d69d33;
-border-right: 3px solid #d69d33;
-border-left:none;
-border-top:none;
+
 	
 
 }
+
+.btn-danger:hover, .btn-danger:active, .btn-danger.hover {
+
+	background-color: #8c0025;border-bottom: 3px solid #fbb83b;
+
+border-right: 3px solid #fbb83b;
+
+border-left:none;
+
+border-top:none;
+
+
+
+}
+
+
 
 .btn-danger.focus, .btn-danger:focus{
-	background-color: #dc9a1e!important;
+	background-color: #8c0025!important;
 }
 
 
@@ -4879,7 +4894,7 @@ border:1px solid #CCCCCC;-webkit-box-shadow: #FEFFFF 0px 1px 1px ;-moz-box-shado
     margin-top: 100px;
 }
 .login-panel .panel-heading {
-    background: #2a3f54;
+    background: #444444;
     color: #fff;
 }
 
